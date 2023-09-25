@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenVerifyView
 
 from .views import get_user
 
-app_name = "core_accounts_urls"
+app_name = "user_management_urls"
 
 urlpatterns = [
     path("auth/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
