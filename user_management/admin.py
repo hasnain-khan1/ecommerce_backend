@@ -13,21 +13,21 @@ class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    list_display = ["first_name", "last_name", "email", "username", "is_admin", "is_active", "link"]
+    list_display = ["first_name", "last_name", "email", "user_name", "is_admin", "is_active", "link"]
     list_filter = ()
 
-    list_editable = ["first_name", "last_name", "usernmae"]
+    list_editable = ["first_name", "last_name", "user_name"]
     list_display_links = ["link"]
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'username')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'user_name')}),
         ('Permissions', {'fields': ('is_admin',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'first_name', 'password1', 'password2', 'username')}
+            'fields': ('email', 'first_name', 'password1', 'password2', 'user_name')}
          ),
     )
     search_fields = ('email',)
