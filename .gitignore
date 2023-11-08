@@ -3,3 +3,7 @@ ecom.venv/
 /.idea/
 /core/migrations/
 /migrations/
+venv
+venv/
+/venv
+/venv/

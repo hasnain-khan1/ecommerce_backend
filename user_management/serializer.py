@@ -1,8 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
-
-from user_management.models import UserModel
+from user_management.models import UserModel, SellerModel
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,12 +16,12 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "password",
             "confirm_password",
-            "is_admin"
+            # "is_admin"
         )
         extra_kwargs = {
             "id": {"read_only": True},
             "password": {"write_only": True},
-            "is_admin": {"read_only": True},
+            "is_superuser": {"read_only": True},
         }
 
     def save(self):
@@ -36,10 +35,24 @@ class UserSerializer(serializers.ModelSerializer):
     def validate(self, data):
         data = super().validate(data)
         try:
-            if not data.get("password") == data.get("confirm_password"):
+            if data.get("password") != data.get("confirm_password"):
                 raise serializers.ValidationError({"error": "Password doesn't match"})
             validate_password(password=data.get("password"))
             return data
         except exceptions.ValidationError as e:
             errors = {"password": list(e.messages)}
-            raise serializers.ValidationError(errors)
+            raise serializers.ValidationError(errors) from e
+
+        
+class SellerSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = SellerModel
+        fields = "__all__"
+
+        extra_kwargs = {
+            "id": {"read_only": True},
+            "password": {"write_only": True},
+            "is_superuser": {"read_only": True}
+        }
+        
