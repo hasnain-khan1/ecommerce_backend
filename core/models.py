@@ -9,7 +9,6 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
     parent = models.ForeignKey('self', null=True, blank=True, related_name="children", on_delete=models.SET_NULL)
     slug = models.SlugField(unique=True)
-    products = models.ManyToManyField("Product", related_name="category_products")
     description = models.TextField(blank=True)
 
     def __str__(self):
@@ -19,6 +18,7 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=300)
     seller = models.ForeignKey(SellerModel, on_delete=models.CASCADE, related_name="seller_products")
+    category = models.ManyToManyField(Category, blank=True, related_name="category_products")
     slug = models.SlugField(unique=True)
     image = models.ImageField(upload_to='products/')
     description = models.TextField()
@@ -29,7 +29,7 @@ class Product(models.Model):
 
 class Checkout(models.Model):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product)
+    products = models.ManyToManyField(Product, blank=True)
 
     shipping_address = models.TextField()
     payment_method = models.CharField(max_length=100)
@@ -40,7 +40,7 @@ class Checkout(models.Model):
 
 class Cart(models.Model):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product, through='CartItem')
+    products = models.ManyToManyField(Product, blank=True, through='CartItem')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
