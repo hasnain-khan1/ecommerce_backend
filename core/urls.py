@@ -12,6 +12,7 @@ router.register('cart_item', CartView, basename="cart_item_urls")
 
 urlpatterns = [
 
-    path("", include(router.urls))
+    path("", include(router.urls)),
+    path("seller_product", ProductView.as_view({'get': 'seller_products'}), name="seller products")
     # path('main_categories/', CategoryList.as_view(), name='category-list'),
 ]
