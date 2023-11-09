@@ -1,8 +1,8 @@
 ecom.venv/
 /ecom_venv/
 /.idea/
-/core/migrations/
-/migrations/
+#/core/migrations/
+#/migrations/
 venv
 venv/
 /venv
