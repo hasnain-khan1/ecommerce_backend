@@ -1,7 +1,17 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
+from .views import CategoryView, ProductView, CartItemView, CheckoutView, CartView
 
-from .views import CategoryList
+
+router = routers.DefaultRouter()
+router.register('category', CategoryView, basename="category_urls")
+router.register('product', ProductView, basename="product_urls")
+router.register('cart', CartView, basename="cart_urls")
+router.register('checkout', CheckoutView, basename="checkout_urls")
+router.register('cart_item', CartView, basename="cart_item_urls")
 
 urlpatterns = [
-    path('main_categories/', CategoryList.as_view(), name='category-list'),
+
+    path("", include(router.urls))
+    # path('main_categories/', CategoryList.as_view(), name='category-list'),
 ]
