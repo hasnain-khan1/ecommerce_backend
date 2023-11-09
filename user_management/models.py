@@ -49,5 +49,5 @@ class UserModel(AbstractUser):
 class SellerModel(AbstractUser):
 
     company_name = models.CharField(max_length=255, null=True, blank=True)
-    user_permissions = models.ManyToManyField(Permission, related_name='seller_permissions')
-    groups = models.ManyToManyField(Group, related_name="seller_groups")
+    user_permissions = models.ManyToManyField(Permission, blank=True, related_name='seller_permissions')
+    groups = models.ManyToManyField(Group, blank=True, related_name="seller_groups")
