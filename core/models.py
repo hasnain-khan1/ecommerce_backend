@@ -52,8 +52,7 @@ class Product(LogsMixin):
 
 
 class Checkout(LogsMixin):
-    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
+    cart = models.ForeignKey("Cart", related_name="cart_checkout", on_delete=models.CASCADE)
     shipping_address = models.TextField()
     payment_method = models.CharField(max_length=100)
 

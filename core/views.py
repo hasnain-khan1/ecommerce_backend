@@ -177,7 +177,7 @@ class CartView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, user=request.user)
             serialized_data = self.get_serializer(data, many=True).data
             return_response['data'] = serialized_data
 
@@ -210,7 +210,7 @@ class CartView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, user=request.user)
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -250,7 +250,7 @@ class CheckoutView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, cart__user=request.user)
             serialized_data = self.get_serializer(data, many=True).data
             return_response['data'] = serialized_data
 
@@ -283,7 +283,7 @@ class CheckoutView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, cart__user=request.user)
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -323,7 +323,7 @@ class CartItemView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, cart__user=request.user)
             serialized_data = self.get_serializer(data, many=True).data
             return_response['data'] = serialized_data
 
@@ -356,7 +356,7 @@ class CartItemView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, cart__user=request.user)
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
