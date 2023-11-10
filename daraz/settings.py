@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
     'user_management',
     'core'
@@ -134,6 +135,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "user_management.UserModel"
 
 AUTHENTICATION_BACKENDS = [
-    'user_management.custom_backend.CustomModelBackend',
+    # 'user_management.custom_backend.CustomModelBackend',
     'django.contrib.auth.backends.ModelBackend',  # Keep the default backend
 ]

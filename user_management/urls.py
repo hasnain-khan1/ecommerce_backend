@@ -4,14 +4,16 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.views import TokenVerifyView
 from rest_framework import routers
 
-from user_management.views import UserView, SellerView
+from user_management.views import UserView
 
 # from .views import get_user
-router = routers.DefaultRouter()
-router.register("user", UserView, basename="user_router")
-router.register("seller", SellerView, basename="seller_router")
+
+# router.register("seller", SellerView, basename="seller_router")
 
 app_name = "user_management_urls"
+
+router = routers.DefaultRouter()
+router.register("user", UserView, basename="user_router")
 
 urlpatterns = [
     path("auth/", TokenObtainPairView.as_view(), name="token_obtain_pair"),

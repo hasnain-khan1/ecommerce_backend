@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import viewsets
 
-from user_management.models import SellerModel, UserModel
-from user_management.serializer import UserSerializer, SellerSerializer
+from user_management.models import UserModel
+from user_management.serializer import UserSerializer
 
 
 # @api_view(['GET'])
@@ -28,10 +28,10 @@ from user_management.serializer import UserSerializer, SellerSerializer
 #     }
 
 
-class SellerView(viewsets.ModelViewSet):
-
-    serializer_class = SellerSerializer
-    queryset = SellerModel.objects.all()
+# class SellerView(viewsets.ModelViewSet):
+#
+#     serializer_class = SellerSerializer
+#     queryset = SellerModel.objects.all()
 
 
 class UserView(viewsets.ModelViewSet):
