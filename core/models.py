@@ -65,6 +65,9 @@ class Checkout(LogsMixin):
         self.deleted_at = timezone.now()
         self.save()
 
+    def __str__(self):
+        return f"{self.user}-{self.cart}-checkout"
+
 
 class Cart(LogsMixin):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)

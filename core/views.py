@@ -14,7 +14,7 @@ class CategoryView(viewsets.ModelViewSet):
 
 
 class ProductView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -29,24 +29,24 @@ class ProductView(viewsets.ModelViewSet):
 
 
 class CartView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
 
 
 class CheckoutView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Checkout.objects.all()
     serializer_class = CheckoutSerializer
 
 
 class CartItemView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
 
 
 class BuyProductView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = BuyProduct.objects.all()
     serializer_class = BuyProductSerializer
