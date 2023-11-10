@@ -2,8 +2,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
-from .models import Category, Product, Cart, CartItem, Checkout
-from .serializers import CategorySerializer, ProductSerializer, CheckoutSerializer, CartSerializer, CartItemSerializer
+from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct
+from .serializers import (CategorySerializer, ProductSerializer, CheckoutSerializer, CartSerializer, CartItemSerializer,
+                          BuyProductSerializer)
 
 
 class CategoryView(viewsets.ModelViewSet):
@@ -43,3 +44,9 @@ class CartItemView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
+
+
+class BuyProductView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = BuyProduct.objects.all()
+    serializer_class = BuyProductSerializer
