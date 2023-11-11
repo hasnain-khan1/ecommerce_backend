@@ -1,45 +1,34 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, Permission, Group
 from django.db import models
+from django.utils import timezone
 
 
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_admin', True)
-        return self.create_user(email, password, **extra_fields)
+class UserChoices(models.TextChoices):
+    BUYER = 1, "Buyer"
+    SELLER = 2, "Seller"
 
 
-class UserModel(AbstractBaseUser):
-    email = models.CharField(max_length=50, unique=True)
-    first_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, blank=True)
-    user_name = models.CharField(max_length=50, blank=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
+class StatusChoices(models.TextChoices):
+    ACTIVE = 0, "Active"
+    DELETED = 1, "Deleted"
 
-    USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ["first_name"]
-    objects = UserManager()
 
-    def has_perm(self, perm, obj=None):  # noqa
-        # For now, allow all permissions
-        return True
-
-    def has_module_perms(self, app_label):  # noqa
-        # For now, allow all app modules
-        return True
+class UserModel(AbstractUser):
+    user_type = models.CharField(max_length=10, choices=UserChoices.choices, null=True, blank=True)
+    status = models.CharField(max_length=12, choices=StatusChoices.choices, default=StatusChoices.ACTIVE)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def delete(self, using=None, keep_parents=False):
-        # Check if the user is a superuser before allowing deletion
-        if self.is_superuser:
-            super(UserModel, self).delete(using=using, keep_parents=keep_parents)
-        else:
-            from django.core.exceptions import PermissionDenied
-            raise PermissionDenied("Only superusers can delete entries.")
+        """
+        Override the delete method to update the 'status' field instead of hard delete.
+        """
+        self.status = StatusChoices.DELETED  # Update the 'status' field to your desired value
+        self.deleted_at = timezone.now()
+        self.save()
+
+
+# class SellerModel(AbstractUser):
+#
+#     company_name = models.CharField(max_length=255, null=True, blank=True)
+#     user_permissions = models.ManyToManyField(Permission, blank=True, related_name='seller_permissions')
+#     groups = models.ManyToManyField(Group, blank=True, related_name="seller_groups")
