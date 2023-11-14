@@ -13,13 +13,33 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('name', 'slug', 'image', 'description', 'seller', 'created_at', 'deleted_at')
+        fields = ('name', 'slug', 'image', 'description', 'category', 'seller', 'created_at', 'deleted_at')
+
+    def to_representation(self, instance):
+        if self.context['request'].method == "GET":
+            category = instance.category
+            serialized_category = CategorySerializer(category).data
+            instance_dict = model_to_dict(instance)
+            instance_dict['products'] = serialized_category
+            return instance_dict
+
+        return super().to_representation(instance)
 
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
-        fields = '__all__'
+        fields = ('user', 'products')
+
+    def to_representation(self, instance):
+        if self.context['request'].method == "GET":
+            products = instance.products.all()
+            serialized_product = ProductSerializer(products, many=True, context=self.context).data
+            instance_dict = model_to_dict(instance)
+            instance_dict['products'] = serialized_product
+            return instance_dict
+
+        return super().to_representation(instance)
 
 
 class CartItemSerializer(serializers.ModelSerializer):
@@ -30,9 +50,9 @@ class CartItemSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         if self.context['request'].method == "GET":
             products = instance.product
-            serialized_product = ProductSerializer(products).data
+            serialized_product = ProductSerializer(products, context=self.context).data
             instance_dict = model_to_dict(instance)
-            instance_dict['product'] = serialized_product
+            instance_dict['products'] = serialized_product
             return instance_dict
 
         return super().to_representation(instance)
@@ -64,7 +84,7 @@ class BuyProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         if self.context['request'].method == "GET":
             products = instance.checkout.cart.products.all()
-            serialized_product = ProductSerializer(products, many=True).data
+            serialized_product = ProductSerializer(products, many=True, context=self.context).data
             instance_dict = model_to_dict(instance)
             instance_dict['created_at'] = instance.created_at
             instance_dict['updated_at'] = instance.updated_at

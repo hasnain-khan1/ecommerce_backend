@@ -65,7 +65,7 @@ class Checkout(LogsMixin):
         self.save()
 
     def __str__(self):
-        return f"{self.user}-{self.cart}-checkout"
+        return f"{self.cart}-{self.cart}-checkout"
 
 
 class Cart(LogsMixin):
