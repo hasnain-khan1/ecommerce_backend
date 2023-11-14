@@ -1,9 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
-from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct
+from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review
 from .serializers import (CategorySerializer, ProductSerializer, CheckoutSerializer, CartSerializer, CartItemSerializer,
-                          BuyProductSerializer)
+                          BuyProductSerializer, ReviewSerializer)
 from user_management.models import StatusChoices
 
 
@@ -123,6 +123,7 @@ class ProductView(viewsets.ModelViewSet):
         try:
             data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
             serialized_data = self.get_serializer(data).data
+            # serialized_data['review'] =
             return_response['data'] = serialized_data
 
         except Exception as er:
@@ -168,6 +169,80 @@ class ProductView(viewsets.ModelViewSet):
             return Response(return_response, status=status)
 
 
+class ReviewView(viewsets.ModelViewSet):
+    # permission_classes = [IsAuthenticated]
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def list(self, request, *args, **kwargs):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+        try:
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE)
+            serialized_data = self.get_serializer(data, many=True).data
+            return_response['data'] = serialized_data
+
+        except Exception as er:
+            return_response['message'] = f"Exception in Category -> {er}"
+            status = 400
+        finally:
+            return Response(return_response, status=status)
+
+    def create(self, request, **kwargs):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+        try:
+            if serialized_data := self.get_serializer(data=request.data):
+                serialized_data.save()
+                return_response['data'] = serialized_data.data
+
+            else:
+                return_response['message'] = f"Bad Request -> {serialized_data.errors}"
+                status = 400
+
+        except Exception as er:
+            return_response['message'] = f"Exception in Category -> {er}"
+            status = 400
+
+        finally:
+            return Response(return_response, status=status)
+
+    def retrieve(self, request, pk=None, **kwargs):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+        try:
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
+            serialized_data = self.get_serializer(data).data
+            return_response['data'] = serialized_data
+
+        except Exception as er:
+            return_response['message'] = f"Exception in Category -> {er}"
+            status = 400
+        finally:
+            return Response(return_response, status=status)
+
+    def update(self, request, pk=None, **kwargs):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+
+        try:
+            queryset = self.get_queryset().filter(pk=pk)
+            if serialized_data := self.get_serializer(queryset, data=request.data, partial=True):
+                serialized_data.save()
+                return_response['data'] = serialized_data.data
+
+            else:
+                return_response['message'] = f"Bad Request -> {serialized_data.errors}"
+                status = 400
+
+        except Exception as er:
+            return_response['message'] = f"Exception in Category -> {er}"
+            status = 400
+
+        finally:
+            return Response(return_response, status=status)
+
+
 class CartView(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = Cart.objects.all()
@@ -177,7 +252,7 @@ class CartView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, user=request.user)
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, user=1)
             serialized_data = self.get_serializer(data, many=True).data
             return_response['data'] = serialized_data
 
@@ -250,7 +325,7 @@ class CheckoutView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, cart__user=request.user)
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, cart__user=1)
             serialized_data = self.get_serializer(data, many=True).data
             return_response['data'] = serialized_data
 
@@ -323,7 +398,7 @@ class CartItemView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, cart__user=request.user)
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, cart__user=1)
             serialized_data = self.get_serializer(data, many=True).data
             return_response['data'] = serialized_data
 
@@ -396,7 +471,7 @@ class BuyProductView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, checkout__user=request.user)
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE, checkout__cart__user=1)
             serialized_data = self.get_serializer(data, many=True).data
             return_response['data'] = serialized_data
 

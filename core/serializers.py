@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 
-from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct
+from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -93,3 +93,9 @@ class BuyProductSerializer(serializers.ModelSerializer):
 
         return super().to_representation(instance)
 
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = '__all__'
