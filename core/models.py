@@ -36,8 +36,18 @@ class Product(LogsMixin):
     seller = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name="seller_products")
     category = models.ManyToManyField(Category, blank=True, related_name="category_products")
     slug = models.SlugField(unique=True)
-    image = models.ImageField(upload_to='products/')
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
     description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    sales_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+
+    def overall_rating(self):
+        reviews = self.reviews.all()
+        if reviews.exists():
+            total_rating = sum(review.rating for review in reviews)
+            return total_rating / len(reviews)
+        else:
+            return 0
 
     def delete(self, using=None, keep_parents=False):
         """
@@ -49,6 +59,13 @@ class Product(LogsMixin):
 
     def __str__(self):
         return self.name
+
+
+class Review(LogsMixin):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    comment = models.TextField()
 
 
 class Checkout(LogsMixin):

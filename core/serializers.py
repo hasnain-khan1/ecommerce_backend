@@ -13,16 +13,16 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('name', 'slug', 'image', 'description', 'category', 'seller', 'created_at', 'deleted_at')
+        fields = ('name', 'slug', 'description', 'category', 'seller', 'created_at', 'deleted_at')
 
     def to_representation(self, instance):
         if self.context['request'].method == "GET":
-            category = instance.category
-            serialized_category = CategorySerializer(category).data
+            category = instance.category.all()
+            serialized_category = CategorySerializer(category, many=True).data
             instance_dict = model_to_dict(instance)
-            instance_dict['products'] = serialized_category
+            instance_dict['category'] = serialized_category
+            instance_dict['image'] = instance.image.url if instance.image else ''
             return instance_dict
-
         return super().to_representation(instance)
 
 
