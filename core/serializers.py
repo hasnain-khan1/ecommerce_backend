@@ -16,14 +16,17 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug', 'description', 'category', 'seller', 'created_at', 'deleted_at')
 
     def to_representation(self, instance):
-        if self.context['request'].method == "GET":
+        if self.context['request'].method != "GET":
+            return super().to_representation(instance)
+        try:
             category = instance.category.all()
-            serialized_category = CategorySerializer(category, many=True).data
-            instance_dict = model_to_dict(instance)
-            instance_dict['category'] = serialized_category
-            instance_dict['image'] = instance.image.url if instance.image else ''
-            return instance_dict
-        return super().to_representation(instance)
+        except AttributeError:
+            category = instance.first().category.all()
+        serialized_category = CategorySerializer(category, many=True).data
+        instance_dict = model_to_dict(instance)
+        instance_dict['category'] = serialized_category
+        instance_dict['image'] = instance.image.url if instance.image else ''
+        return instance_dict
 
 
 class CartSerializer(serializers.ModelSerializer):

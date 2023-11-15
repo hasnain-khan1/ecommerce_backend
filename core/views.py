@@ -30,7 +30,8 @@ class CategoryView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            if serialized_data := self.get_serializer(data=request.data):
+            serialized_data = self.get_serializer(data=request.data)
+            if serialized_data.is_valid():
                 serialized_data.save()
                 return_response['data'] = serialized_data.data
 
@@ -48,7 +49,7 @@ class CategoryView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE).first()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -102,7 +103,8 @@ class ProductView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            if serialized_data := self.get_serializer(data=request.data):
+            serialized_data = self.get_serializer(data=request.data)
+            if serialized_data.is_valid():
                 serialized_data.save()
                 return_response['data'] = serialized_data.data
 
@@ -121,9 +123,11 @@ class ProductView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE).first()
             serialized_data = self.get_serializer(data).data
-            # serialized_data['review'] =
+            reviews = data.reviews.all()
+            reviews_serialized = ReviewSerializer(reviews, many=True).data
+            serialized_data['reviews'] = reviews_serialized
             return_response['data'] = serialized_data
 
         except Exception as er:
@@ -192,7 +196,8 @@ class ReviewView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            if serialized_data := self.get_serializer(data=request.data):
+            serialized_data = self.get_serializer(data=request.data)
+            if serialized_data.is_valid():
                 serialized_data.save()
                 return_response['data'] = serialized_data.data
 
@@ -211,7 +216,7 @@ class ReviewView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE).first()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -266,7 +271,8 @@ class CartView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            if serialized_data := self.get_serializer(data=request.data):
+            serialized_data = self.get_serializer(data=request.data)
+            if serialized_data.is_valid():
                 serialized_data.save()
                 return_response['data'] = serialized_data.data
 
@@ -285,7 +291,7 @@ class CartView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, user=request.user)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, user=request.user).first()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -339,7 +345,8 @@ class CheckoutView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            if serialized_data := self.get_serializer(data=request.data):
+            serialized_data = self.get_serializer(data=request.data)
+            if serialized_data.is_valid():
                 serialized_data.save()
                 return_response['data'] = serialized_data.data
 
@@ -358,7 +365,7 @@ class CheckoutView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, cart__user=request.user)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, cart__user=request.user).first()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -412,7 +419,8 @@ class CartItemView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            if serialized_data := self.get_serializer(data=request.data):
+            serialized_data = self.get_serializer(data=request.data)
+            if serialized_data.is_valid():
                 serialized_data.save()
                 return_response['data'] = serialized_data.data
 
@@ -431,7 +439,7 @@ class CartItemView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, cart__user=request.user)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, cart__user=request.user).first()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -486,7 +494,8 @@ class BuyProductView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            if serialized_data := self.get_serializer(data=request.data):
+            serialized_data = self.get_serializer(data=request.data)
+            if serialized_data.is_valid():
                 serialized_data.save()
                 return_response['data'] = serialized_data.data
 
@@ -505,7 +514,7 @@ class BuyProductView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE)
+            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE).first()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
