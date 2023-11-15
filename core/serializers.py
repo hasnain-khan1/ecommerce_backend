@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.forms.models import model_to_dict
-
 from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review
 
 
@@ -15,6 +14,15 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('name', 'slug', 'description', 'category', 'seller', 'created_at', 'deleted_at')
 
+    @staticmethod
+    def total_review(instance):
+        reviews = instance.reviews.all()
+        if reviews.exists():
+            total_rating = sum(review.rating for review in reviews)
+            return total_rating / len(reviews)
+        else:
+            return 0
+
     def to_representation(self, instance):
         if self.context['request'].method != "GET":
             return super().to_representation(instance)
@@ -24,6 +32,7 @@ class ProductSerializer(serializers.ModelSerializer):
             category = instance.first().category.all()
         serialized_category = CategorySerializer(category, many=True).data
         instance_dict = model_to_dict(instance)
+        instance_dict['overall_review'] = self.total_review(instance)
         instance_dict['category'] = serialized_category
         instance_dict['image'] = instance.image.url if instance.image else ''
         return instance_dict

@@ -41,14 +41,6 @@ class Product(LogsMixin):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     sales_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
-    def overall_rating(self):
-        reviews = self.reviews.all()
-        if reviews.exists():
-            total_rating = sum(review.rating for review in reviews)
-            return total_rating / len(reviews)
-        else:
-            return 0
-
     def delete(self, using=None, keep_parents=False):
         """
         Override the delete method to update the 'status' field instead of hard delete.
