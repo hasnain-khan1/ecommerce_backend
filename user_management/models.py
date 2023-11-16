@@ -14,17 +14,23 @@ class StatusChoices(models.TextChoices):
 
 
 class UserModel(AbstractUser):
+    phone_number = models.CharField(max_length=15, blank=False, null=False, unique=True)
+    email = models.EmailField(unique=True)
     user_type = models.CharField(max_length=10, choices=UserChoices.choices, null=True, blank=True)
     status = models.CharField(max_length=12, choices=StatusChoices.choices, default=StatusChoices.ACTIVE)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
-    def delete(self, using=None, keep_parents=False):
-        """
-        Override the delete method to update the 'status' field instead of hard delete.
-        """
-        self.status = StatusChoices.DELETED  # Update the 'status' field to your desired value
-        self.deleted_at = timezone.now()
-        self.save()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['phone_number']
+
+    # def delete(self, using=None, keep_parents=False):
+    #     """
+    #     Override the delete method to update the 'status' field instead of hard delete.
+    #     """
+    #     self.status = StatusChoices.DELETED  # Update the 'status' field to your desired value
+    #     self.deleted_at = timezone.now()
+    #     self.save()
+    #     return
 
 
 # class SellerModel(AbstractUser):

@@ -5,6 +5,7 @@ from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Rev
 from .serializers import (CategorySerializer, ProductSerializer, CheckoutSerializer, CartSerializer, CartItemSerializer,
                           BuyProductSerializer, ReviewSerializer)
 from user_management.models import StatusChoices
+from django.utils import timezone
 
 
 class CategoryView(viewsets.ModelViewSet):
@@ -49,7 +50,7 @@ class CategoryView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE).first()
+            data = self.get_object()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -78,6 +79,13 @@ class CategoryView(viewsets.ModelViewSet):
 
         finally:
             return Response(return_response, status=status)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
 
 
 class ProductView(viewsets.ModelViewSet):
@@ -119,11 +127,18 @@ class ProductView(viewsets.ModelViewSet):
         finally:
             return Response(return_response, status=status)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
+
     def retrieve(self, request, pk=None, **kwargs):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE).first()
+            data = self.get_object()
             serialized_data = self.get_serializer(data).data
             reviews = data.reviews.all()
             reviews_serialized = ReviewSerializer(reviews, many=True).data
@@ -172,6 +187,13 @@ class ProductView(viewsets.ModelViewSet):
         finally:
             return Response(return_response, status=status)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
+
 
 class ReviewView(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -216,7 +238,7 @@ class ReviewView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE).first()
+            data = self.get_object()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -246,6 +268,13 @@ class ReviewView(viewsets.ModelViewSet):
 
         finally:
             return Response(return_response, status=status)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
 
 
 class CartView(viewsets.ModelViewSet):
@@ -291,7 +320,7 @@ class CartView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, user=request.user).first()
+            data = self.get_object()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -320,6 +349,13 @@ class CartView(viewsets.ModelViewSet):
 
         finally:
             return Response(return_response, status=status)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
 
 
 class CheckoutView(viewsets.ModelViewSet):
@@ -365,7 +401,7 @@ class CheckoutView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, cart__user=request.user).first()
+            data = self.get_object()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -394,6 +430,13 @@ class CheckoutView(viewsets.ModelViewSet):
 
         finally:
             return Response(return_response, status=status)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
 
 
 class CartItemView(viewsets.ModelViewSet):
@@ -439,7 +482,7 @@ class CartItemView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE, cart__user=request.user).first()
+            data = self.get_object()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -468,6 +511,13 @@ class CartItemView(viewsets.ModelViewSet):
 
         finally:
             return Response(return_response, status=status)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
 
 
 class BuyProductView(viewsets.ModelViewSet):
@@ -514,7 +564,7 @@ class BuyProductView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            data = self.get_queryset().filter(pk=pk, status=StatusChoices.ACTIVE).first()
+            data = self.get_object()
             serialized_data = self.get_serializer(data).data
             return_response['data'] = serialized_data
 
@@ -543,3 +593,10 @@ class BuyProductView(viewsets.ModelViewSet):
 
         finally:
             return Response(return_response, status=status)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)

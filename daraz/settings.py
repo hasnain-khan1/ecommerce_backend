@@ -60,6 +60,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
+AUTHENTICATION_CLASSES = (
+    'rest_framework_simplejwt.authentication.JWTAuthentication',
+)
 
 SIMPLE_JWT = {
     'TOKEN_LIFETIME': timedelta(days=1),

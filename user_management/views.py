@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import viewsets
-
-from user_management.models import UserModel
+from django.utils import timezone
+from user_management.models import UserModel, StatusChoices
 from user_management.serializer import UserSerializer
 
 
@@ -38,3 +38,10 @@ class UserView(viewsets.ModelViewSet):
 
     serializer_class = UserSerializer
     queryset = UserModel.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
