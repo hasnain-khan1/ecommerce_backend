@@ -1,6 +1,7 @@
 from django.db import models
 from user_management.models import UserModel, StatusChoices
 from django.utils import timezone
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class LogsMixin(models.Model):
@@ -13,11 +14,15 @@ class LogsMixin(models.Model):
         abstract = True
 
 
-class Category(LogsMixin):
+class Category(MPTTModel):
     name = models.CharField(max_length=100)
-    parent = models.ForeignKey('self', null=True, blank=True, related_name="children", on_delete=models.SET_NULL)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name="children", on_delete=models.SET_NULL)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=12, choices=StatusChoices.choices, default=StatusChoices.ACTIVE)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -69,6 +74,7 @@ class Checkout(LogsMixin):
 
 class Cart(LogsMixin):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    cart_name = models.CharField(max_length=200, null=True, blank=True)
     products = models.ManyToManyField(Product, blank=True, through='CartItem')
 
     def __str__(self):
