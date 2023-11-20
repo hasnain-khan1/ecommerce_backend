@@ -42,6 +42,7 @@ class ProductVariation(LogsMixin):
     color = models.CharField(max_length=50, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=0)
     size = models.CharField(max_length=25, null=True, blank=True)
+    out_of_stock = models.BooleanField(default=False)
 
 
 class ProductAttribute(LogsMixin):
@@ -77,6 +78,7 @@ class Cart(LogsMixin):
 class CartItem(LogsMixin):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    variation = models.ForeignKey(ProductVariation, on_delete=models.CASCADE, related_name="product_variation")
     quantity = models.PositiveIntegerField(default=1)  # You can track the quantity of each product in the cart
 
     def __str__(self):
