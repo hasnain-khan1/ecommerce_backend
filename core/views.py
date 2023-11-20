@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
@@ -187,12 +188,21 @@ class ProductView(viewsets.ModelViewSet):
         finally:
             return Response(return_response, status=status)
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.status = StatusChoices.DELETED
-        instance.deleted_at = timezone.now()
-        instance.save()
-        return Response({"message": "Successful"}, status=200)
+    def search_product(self, request):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+        try:
+            word = self.request.query_params.get('w')
+            queryset = Product.objects.filter(Q(name__icontains=word) | Q(description__icontains=word))
+            serialized_data = ProductSerializer(queryset, many=True).data
+            return_response['data'] = serialized_data
+
+        except Exception as er:
+            return_response['message'] = f"Exception in Category -> {er}"
+            status = 400
+
+        finally:
+            return Response(return_response, status=status)
 
 
 class ReviewView(viewsets.ModelViewSet):

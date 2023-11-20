@@ -14,6 +14,7 @@ router.register('review', ReviewView, basename='reviews')
 urlpatterns = [
 
     path("", include(router.urls)),
-    path("seller_product", ProductView.as_view({'get': 'seller_products'}), name="seller products")
+    path("seller_product", ProductView.as_view({'get': 'seller_products'}), name="seller products"),
+    path('search_product', ProductView.as_view({'get': 'search_product'}), name="searching"),
     # path('main_categories/', CategoryList.as_view(), name='category-list'),
 ]
