@@ -1,6 +1,16 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from .models import BuyProduct
+
+
+@receiver(pre_save, sender=BuyProduct)
+def update_out_of_stock_status(sender, instance, **kwargs):
+    cart_items = instance.checkout.cart.cartitem_set.all()
+    for each in cart_items:
+        quantity = each.quantity
+        product_variation = each.variation
+        if quantity > product_variation.quantity:
+            raise ValueError("Not Enough Quantity to Buy")
 
 
 @receiver(post_save, sender=BuyProduct)
