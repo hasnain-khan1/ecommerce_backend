@@ -144,6 +144,10 @@ class ProductView(viewsets.ModelViewSet):
             serialized_data = self.get_serializer(data).data
             reviews = data.reviews.all()
             reviews_serialized = ReviewSerializer(reviews, many=True).data
+            variations = data.variations.all()
+            serialized_var = ProductVariationSerializer(variations, many=True).data
+            serialized_data['variation'] = serialized_var
+
             serialized_data['reviews'] = reviews_serialized
             return_response['data'] = serialized_data
 
