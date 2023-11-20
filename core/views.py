@@ -199,7 +199,7 @@ class ProductView(viewsets.ModelViewSet):
         try:
             word = self.request.query_params.get('w')
             queryset = Product.objects.filter(Q(name__icontains=word) | Q(description__icontains=word))
-            serialized_data = ProductSerializer(queryset, many=True).data
+            serialized_data = self.get_serializer(queryset, many=True).data
             return_response['data'] = serialized_data
 
         except Exception as er:
