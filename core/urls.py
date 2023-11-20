@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import CategoryView, ProductView, CartItemView, CheckoutView, CartView, BuyProductView, ReviewView
+from .views import CategoryView, ProductView, CartItemView, CheckoutView, CartView, BuyProductView, ReviewView, \
+    ProductVariationView, ProductAttributeView
 
 router = routers.DefaultRouter()
 router.register('category', CategoryView, basename="category_urls")
@@ -10,6 +11,9 @@ router.register('checkout', CheckoutView, basename="checkout_urls")
 router.register('cart_item', CartItemView, basename="cart_item_urls")
 router.register('buy_product', BuyProductView, basename='buy_products')
 router.register('review', ReviewView, basename='reviews')
+router.register('product_variation', ProductVariationView, basename='variation')
+router.register('product_attributes', ProductAttributeView, basename='attributes')
+
 
 urlpatterns = [
 

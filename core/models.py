@@ -37,14 +37,14 @@ class Product(LogsMixin):
         return self.name
 
 
-class ProductVariation(models.Model):
+class ProductVariation(LogsMixin):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="variations")
     color = models.CharField(max_length=50, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=0)
     size = models.CharField(max_length=25, null=True, blank=True)
 
 
-class ProductAttribute(models.Model):
+class ProductAttribute(LogsMixin):
     product_variation = models.ForeignKey(ProductVariation, on_delete=models.CASCADE, related_name="attributes")
     attribute_name = models.CharField(max_length=50, null=True)
     attribute_value = models.CharField(max_length=100, blank=True)

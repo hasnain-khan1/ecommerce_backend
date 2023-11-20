@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.forms.models import model_to_dict
-from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review
+from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review, ProductVariation, ProductAttribute
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -36,6 +36,20 @@ class ProductSerializer(serializers.ModelSerializer):
         instance_dict['category'] = serialized_category
         instance_dict['image'] = instance.image.url if instance.image else ''
         return instance_dict
+
+
+class ProductVariationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductVariation
+        fields = '__all__'
+
+
+class ProductAttributesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductAttribute
+        fields = '__all__'
 
 
 class CartSerializer(serializers.ModelSerializer):
