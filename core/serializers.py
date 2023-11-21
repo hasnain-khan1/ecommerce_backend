@@ -11,9 +11,34 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #
+    #     # Debugging statements
+    #     print(f"Serializing instance {instance.id}")
+    #
+    #     # Serialize parents
+    #     parents = instance.get_ancestors()
+    #     representation['parents'] = CategorySerializer(parents, many=True).data
+    #
+    #     # Serialize children
+    #     children = instance.get_descendants()
+    #     representation['children'] = CategorySerializer(children, many=True).data
+    #
+    #     # Serialize products
+    #     products = instance.category_products.all()
+    #     representation['products'] = ProductSerializer(products, many=True, context=self.context).data
+    #
+    #     # Serialize sale
+    #     sale = instance.sale_set.filter(start_date__lte=date.today(), end_date__gte=date.today()).first()
+    #     representation['sale'] = sale.discount_percentage if sale else 0.0
+    #
+    #     return representation
+
     def to_representation(self, instance):
         if self.context['request'].method != "GET":
             return super().to_representation(instance)
+        # print(f"Serializing instance {instance.id}")
         children = instance.get_descendants()
         parents = instance.get_ancestors()
         products = instance.category_products.all()
@@ -23,6 +48,7 @@ class CategorySerializer(serializers.ModelSerializer):
         self.context['request'].method = "POST"
         children_serializer = CategorySerializer(children, many=True, context=self.context).data
         parents_serializer = CategorySerializer(parents, many=True, context=self.context).data
+        self.context['request'].method = "GET"      # remove this line if nested loop error occurred
 
         instance_dict = super().to_representation(instance)
         instance_dict['sale'] = sale.discount_percentage if sale else 0.0
