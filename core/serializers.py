@@ -5,7 +5,13 @@ from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Rev
 from datetime import date
 
 
+# class CategoryListSerializer(serializers.ListSerializer):
+#     def to_representation(self, data):
+#         return super().to_representation(data)
+
+
 class CategorySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Category
         fields = '__all__'
@@ -18,13 +24,13 @@ class CategorySerializer(serializers.ModelSerializer):
         products = instance.category_products.all()
         products_serializer = ProductSerializer(products, many=True, context=self.context).data
         sale = (instance.sale_set.all().filter(start_date__lte=date.today(), end_date__gte=date.today()).
-                first().discount_percentage)
+                first())
         self.context['request'].method = "POST"
         children_serializer = CategorySerializer(children, many=True, context=self.context).data
         parents_serializer = CategorySerializer(parents, many=True, context=self.context).data
 
         instance_dict = super().to_representation(instance)
-        instance_dict['sale'] = sale
+        instance_dict['sale'] = sale.discount_percentage if sale else 0.0
         instance_dict['parents'] = parents_serializer
         instance_dict['child'] = children_serializer
         instance_dict['products'] = products_serializer
@@ -45,19 +51,28 @@ class ProductSerializer(serializers.ModelSerializer):
         else:
             return 0
 
+    @staticmethod
+    def calculate_sale_price(self, discount_percentage):
+        discount_amount = (float(self.price) * float(discount_percentage)) / 100
+        sale_price = float(self.price) - discount_amount
+        return round(sale_price, 2)
+
     def to_representation(self, instance):
         if self.context['request'].method != "GET":
             return super().to_representation(instance)
-        # try:
-        #     category = instance.category.all()
-        # except AttributeError:
-        #     category = instance.first().category.all()
-        # serialized_category = CategorySerializer(category, many=True).data
+        sale = 0.0
+        if category_sale := instance.category.all().first().sale_set.filter(start_date__lte=date.today(),
+                                                                            end_date__gte=date.today()):
+            sale = category_sale.first().discount_percentage
+        if product_sale := instance.sale_set.filter(start_date__lte=date.today(), end_date__gte=date.today()):
+            sale = product_sale.first().discount_percentage
+        sale_price = self.calculate_sale_price(instance, sale)
         instance_dict = super().to_representation(instance)
-        # instance_dict = model_to_dict(instance)
+        instance_dict['sale_price'] = str(sale_price)
+        instance_dict['sale'] = sale
         instance_dict['overall_review'] = self.total_review(instance)
-        # instance_dict['category'] = serialized_category
         instance_dict['image'] = instance.image.url if instance.image else ''
+        self.context['request'].method = "POST"
         return instance_dict
 
     extra_kwargs = {
