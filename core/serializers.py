@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.forms.models import model_to_dict
-from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review, ProductVariation, ProductAttribute
+from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review, ProductVariation, ProductAttribute, \
+    Sale
+from datetime import date
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -15,11 +17,14 @@ class CategorySerializer(serializers.ModelSerializer):
         parents = instance.get_ancestors()
         products = instance.category_products.all()
         products_serializer = ProductSerializer(products, many=True, context=self.context).data
+        sale = (instance.sale_set.all().filter(start_date__lte=date.today(), end_date__gte=date.today()).
+                first().discount_percentage)
         self.context['request'].method = "POST"
         children_serializer = CategorySerializer(children, many=True, context=self.context).data
         parents_serializer = CategorySerializer(parents, many=True, context=self.context).data
 
         instance_dict = super().to_representation(instance)
+        instance_dict['sale'] = sale
         instance_dict['parents'] = parents_serializer
         instance_dict['child'] = children_serializer
         instance_dict['products'] = products_serializer
@@ -147,4 +152,11 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
+        fields = '__all__'
+
+
+class SaleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Sale
         fields = '__all__'

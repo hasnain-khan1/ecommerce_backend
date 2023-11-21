@@ -42,7 +42,7 @@ class Product(LogsMixin):
         return self.name
 
 
-class Sale(models.Model):
+class Sale(LogsMixin):
     name = models.CharField(max_length=100)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
     start_date = models.DateField()

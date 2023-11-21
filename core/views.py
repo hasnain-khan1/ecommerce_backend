@@ -2,10 +2,11 @@ from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
-from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review, ProductVariation, ProductAttribute
+from .models import (Category, Product, Cart, CartItem, Checkout, BuyProduct, Review, ProductVariation, ProductAttribute,
+                     Sale)
 from .serializers import (CategorySerializer, ProductSerializer, CheckoutSerializer, CartSerializer, CartItemSerializer,
                           BuyProductSerializer, ReviewSerializer, ProductVariationSerializer,
-                          ProductAttributesSerializer)
+                          ProductAttributesSerializer, SaleSerializer)
 from user_management.models import StatusChoices
 from django.utils import timezone
 
@@ -706,6 +707,88 @@ class BuyProductView(viewsets.ModelViewSet):
         status = 200
         try:
             data = self.get_queryset().filter(status=StatusChoices.ACTIVE, checkout__cart__user=1)
+            serialized_data = self.get_serializer(data, many=True).data
+            return_response['data'] = serialized_data
+
+        except Exception as er:
+            msg = f"Exception in Category -> {er}"
+            return_response['message'] = msg
+            status = 400
+        finally:
+            return Response(return_response, status=status)
+
+    def create(self, request, **kwargs):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+        try:
+            serialized_data = self.get_serializer(data=request.data)
+            if serialized_data.is_valid():
+                serialized_data.save()
+                return_response['data'] = serialized_data.data
+
+            else:
+                return_response['message'] = f"Bad Request -> {serialized_data.errors}"
+                status = 400
+
+        except Exception as er:
+            return_response['message'] = f"Exception in Category -> {er}"
+            status = 400
+
+        finally:
+            return Response(return_response, status=status)
+
+    def retrieve(self, request, pk=None, **kwargs):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+        try:
+            data = self.get_object()
+            serialized_data = self.get_serializer(data).data
+            return_response['data'] = serialized_data
+
+        except Exception as er:
+            return_response['message'] = f"Exception in Category -> {er}"
+            status = 400
+        finally:
+            return Response(return_response, status=status)
+
+    def update(self, request, pk=None, **kwargs):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+        try:
+            queryset = self.get_queryset().filter(pk=pk)
+            if serialized_data := self.get_serializer(queryset, data=request.data, partial=True):
+                serialized_data.save()
+                return_response['data'] = serialized_data.data
+
+            else:
+                return_response['message'] = f"Bad Request -> {serialized_data.errors}"
+                status = 400
+
+        except Exception as er:
+            return_response['message'] = f"Exception in Category -> {er}"
+            status = 400
+
+        finally:
+            return Response(return_response, status=status)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = StatusChoices.DELETED
+        instance.deleted_at = timezone.now()
+        instance.save()
+        return Response({"message": "Successful"}, status=200)
+
+
+class SaleView(viewsets.ModelViewSet):
+    # permission_classes = [IsAuthenticated]
+    queryset = Sale.objects.all()
+    serializer_class = SaleSerializer
+
+    def list(self, request, *args, **kwargs):
+        return_response = {'data': [], 'message': "Successful"}
+        status = 200
+        try:
+            data = self.get_queryset().filter(status=StatusChoices.ACTIVE)
             serialized_data = self.get_serializer(data, many=True).data
             return_response['data'] = serialized_data
 
