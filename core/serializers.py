@@ -5,11 +5,6 @@ from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Rev
 from datetime import date
 
 
-# class CategoryListSerializer(serializers.ListSerializer):
-#     def to_representation(self, data):
-#         return super().to_representation(data)
-
-
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
