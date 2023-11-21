@@ -42,6 +42,15 @@ class Product(LogsMixin):
         return self.name
 
 
+class Sale(models.Model):
+    name = models.CharField(max_length=100)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    categories = models.ManyToManyField(Category, blank=True)
+    products = models.ManyToManyField(Product, blank=True)
+
+
 class ProductVariation(LogsMixin):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="variations")
     color = models.CharField(max_length=50, null=True, blank=True)
