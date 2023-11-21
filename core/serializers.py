@@ -67,7 +67,6 @@ class ProductSerializer(serializers.ModelSerializer):
         instance_dict['sale'] = sale
         instance_dict['overall_review'] = self.total_review(instance)
         instance_dict['image'] = instance.image.url if instance.image else ''
-        self.context['request'].method = "POST"
         return instance_dict
 
     extra_kwargs = {
