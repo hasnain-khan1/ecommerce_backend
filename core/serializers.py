@@ -31,7 +31,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
         instance_dict = super().to_representation(instance)
         instance_dict['sale'] = sale.discount_percentage if sale else 0.0
-        instance_dict['parents'] = parents_serializer
+        instance_dict['parent'] = parents_serializer
         instance_dict['child'] = children_serializer
         instance_dict['products'] = products_serializer
         return instance_dict
