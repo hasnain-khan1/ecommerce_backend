@@ -9,6 +9,13 @@ from .serializers import (CategorySerializer, ProductSerializer, CheckoutSeriali
                           ProductAttributesSerializer, SaleSerializer)
 from user_management.models import StatusChoices
 from django.utils import timezone
+from rest_framework.pagination import PageNumberPagination
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 1
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
 
 class CategoryView(viewsets.ModelViewSet):
@@ -95,6 +102,7 @@ class ProductView(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    pagination_class = PageNumberPagination
 
     def list(self, request, *args, **kwargs):
         return_response = {'data': [], 'message': "Successful"}
@@ -213,6 +221,7 @@ class ProductView(viewsets.ModelViewSet):
                 word_query = Q(product__name__icontains=word) | Q(product__description__icontains=word)
                 queryset = queryset.filter(word_query).values_list('product', flat=True)
             queryset = self.get_queryset().filter(id__in=queryset)
+            queryset = self.paginate_queryset(queryset)
             serialized_data = self.get_serializer(queryset, many=True).data
             return_response['data'] = serialized_data
 
