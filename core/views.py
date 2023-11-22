@@ -198,8 +198,21 @@ class ProductView(viewsets.ModelViewSet):
         return_response = {'data': [], 'message': "Successful"}
         status = 200
         try:
-            word = self.request.query_params.get('w')
-            queryset = Product.objects.filter(Q(name__icontains=word) | Q(description__icontains=word))
+            color = self.request.query_params.get('c')
+            size = self.request.query_params.get('s')
+            category = self.request.query_params.get('cate')
+            queryset = ProductVariation.objects.all()
+            if all((category, color, size)):
+                queryset = (queryset.filter(product__category__id=category, color=color, size=size).
+                            values_list('product', flat=True))
+            elif all((category, size)):
+                queryset = queryset.filter(product__category__id=category, size=size).values_list('product', flat=True)
+            elif all((category, color)):
+                queryset = queryset.filter(product__category__id=category, color=color).values_list('product', flat=True)
+            if word := self.request.query_params.get('w'):
+                word_query = Q(product__name__icontains=word) | Q(product__description__icontains=word)
+                queryset = queryset.filter(word_query).values_list('product', flat=True)
+            queryset = self.get_queryset().filter(id__in=queryset)
             serialized_data = self.get_serializer(queryset, many=True).data
             return_response['data'] = serialized_data
 
