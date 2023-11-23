@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from django.forms.models import model_to_dict
-from .models import Category, Product, Cart, CartItem, Checkout, BuyProduct, Review, ProductVariation, ProductAttribute, \
-    Sale
+from .models import (Category, Product, Cart, CartItem, Checkout, BuyProduct, Review, ProductVariation,
+                     ProductAttribute, Sale)
 from datetime import date
 
 
